@@ -23,6 +23,6 @@ public class ParseService {
         final Arranger rearrange = arranger.rearrange(exposedHtml);
         final String interleavedText = interleaver.interleave(rearrange);
         final OutputUnit outputUnit = new OutputUnit(interleavedText, request.getUnitCount());
-        return null;
+        return new ParseResponse(outputUnit);
     }
 }
