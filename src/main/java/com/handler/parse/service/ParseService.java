@@ -14,6 +14,8 @@ public class ParseService {
 
     public ParseResponse parse(final ParseRequest request) {
         final String html = urlConnector.getHtml(request.getUrl());
+        final String exposedHtml = request.getExposureType().getExposedHtml(html);
+
         return null;
     }
 }
