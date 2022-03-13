@@ -19,7 +19,7 @@ public class ParseController {
 
     @Operation(summary = "url data process", description = "URL 파싱후 HTML 데이터 가공")
     @PostMapping("api/parse")
-    public ResponseEntity<ParseResponse> parse(@RequestBody @Valid ParseRequest request) {
+    public ResponseEntity<ParseResponse> parse(@RequestBody @Valid final ParseRequest request) {
         final ParseResponse response = parseService.parse(request);
         return ResponseEntity.ok(response);
     }
