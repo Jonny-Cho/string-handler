@@ -1,9 +1,11 @@
 package com.handler.parse.error;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,9 +19,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.error(e.getMessage());
+
+        final List<ObjectError> allErrors = e.getBindingResult().getAllErrors();
+        final List<CustomError> customErrors = CustomError.from(allErrors);
+
         return ResponseEntity
             .badRequest()
-            .body(new ErrorResponse(e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), "E001"));
+            .body(new ErrorResponse(customErrors, "E001"));
     }
 
     @ExceptionHandler(UrlConnectionException.class)
@@ -28,7 +34,7 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         return ResponseEntity
             .badRequest()
-            .body(new ErrorResponse(e.getMessage(), "E002"));
+            .body(new ErrorResponse("url", e.getMessage(), "E002"));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -37,7 +43,7 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         return ResponseEntity
             .badRequest()
-            .body(new ErrorResponse(e.getMessage(), "E003"));
+            .body(new ErrorResponse("exposureType", e.getMessage(), "E003"));
     }
 
 }
