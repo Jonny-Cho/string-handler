@@ -1,6 +1,7 @@
 package com.handler.parse.error;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> methodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.error(e.getMessage());
 
-        final List<ObjectError> allErrors = e.getBindingResult().getAllErrors();
-        final List<CustomError> customErrors = CustomError.from(allErrors);
+        final List<CustomFieldError> CustomFieldErrors = e.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(CustomFieldError::new)
+            .collect(Collectors.toList());
 
         return ResponseEntity
             .badRequest()
-            .body(new ErrorResponse(customErrors, "E001"));
+            .body(new ErrorResponse(CustomFieldErrors, "E001"));
     }
 
     @ExceptionHandler(UrlConnectionException.class)
